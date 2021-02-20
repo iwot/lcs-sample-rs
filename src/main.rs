@@ -14,10 +14,14 @@ fn main() -> io::Result<()> {
 
     let mut dp = vec![vec![-1; y+1]; x+1];
     let res = calc_lcs(&s, &t, x, y, &mut dp);
-    println!("{}", res);
+    println!("Longest Common Subsequence: {}", res);
+
+    let res = calc_ld(&s, &t);
+    println!("Levenshtein distance: {}", res);
     Ok(())
 }
 
+// 最長共通距離部分列問題
 fn calc_lcs(s: &Vec<char>, t: &Vec<char>, x: usize, y:usize, dp:&mut Vec<Vec<i64>>) -> i64 {
     if x == 0 && y == 0 {
         return 0;
@@ -38,4 +42,23 @@ fn calc_lcs(s: &Vec<char>, t: &Vec<char>, x: usize, y:usize, dp:&mut Vec<Vec<i64
 
     dp[x][y] = res;
     res
+}
+
+// レーベンシュタイン距離
+fn calc_ld(s: &Vec<char>, t: &Vec<char>) -> usize {
+    if s.len() == 0 {
+        return t.len();
+    }
+    if t.len() == 0 {
+        return s.len();
+    }
+    if s[0] == t[0] {
+        return calc_ld(&s[1..].to_vec(), &t[1..].to_vec());
+    }
+
+    let res1 = calc_ld(s, &t[1..].to_vec());
+    let res2 = calc_ld(&s[1..].to_vec(), t);
+    let res3 = calc_ld(&s[1..].to_vec(), &t[1..].to_vec());
+
+    1 + cmp::min(res1, cmp::min(res2, res3))
 }
